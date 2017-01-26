@@ -23,6 +23,7 @@ final class MaterialCircularProgress: UIView {
     let circleOutlineLayer     = CAShapeLayer()
     let insideCircleShapeLayer = CAShapeLayer()
     let checkmarkShapeLayer    = CAShapeLayer()
+    let AfterpartDuration: Double = 0.3
     
     var CheckmarkPath: UIBezierPath {
         get {
@@ -115,7 +116,7 @@ final class MaterialCircularProgress: UIView {
     private func startRotatingAnimation() {
         let rotation            = CABasicAnimation(keyPath: "transform.rotation.z")
         rotation.toValue        = M_PI*6.0
-        rotation.duration       = duration * 0.77
+        rotation.duration       = (duration - AfterpartDuration) * 0.77
         rotation.cumulative     = true
         rotation.additive       = true
         rotation.removedOnCompletion = false
@@ -132,13 +133,13 @@ final class MaterialCircularProgress: UIView {
         let strokeEnd                   = CABasicAnimation(keyPath: "strokeEnd")
         strokeEnd.fromValue             = endFromValue
         strokeEnd.toValue               = endToValue
-        strokeEnd.duration              = duration
+        strokeEnd.duration              = duration - AfterpartDuration
         strokeEnd.fillMode              = kCAFillModeForwards
         strokeEnd.timingFunction        = easeInOutSineTimingFunc
         strokeEnd.removedOnCompletion   = false
         let pathAnim                 = CAAnimationGroup()
         pathAnim.animations          = [strokeEnd]
-        pathAnim.duration            = duration
+        pathAnim.duration            = duration - AfterpartDuration
         pathAnim.fillMode            = kCAFillModeForwards
         pathAnim.removedOnCompletion = false
         CATransaction.begin()
@@ -158,7 +159,7 @@ final class MaterialCircularProgress: UIView {
     private func startFadeOutOutSideLineAnimation() {
         let fadeOutAnimation = CABasicAnimation(keyPath: "opacity")
         fadeOutAnimation.toValue  = 0
-        fadeOutAnimation.duration = 0.3
+        fadeOutAnimation.duration = AfterpartDuration
         fadeOutAnimation.fillMode = kCAFillModeForwards
         fadeOutAnimation.removedOnCompletion = false
         fadeOutAnimation.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseIn)
@@ -168,7 +169,7 @@ final class MaterialCircularProgress: UIView {
     private func startFillCircleAnimation() {
         let fadeInAnimation = CABasicAnimation(keyPath: "opacity")
         fadeInAnimation.toValue  = 1.0
-        fadeInAnimation.duration = 0.3
+        fadeInAnimation.duration = AfterpartDuration
         fadeInAnimation.fillMode = kCAFillModeForwards
         fadeInAnimation.removedOnCompletion = false
         fadeInAnimation.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseIn)
@@ -180,7 +181,7 @@ final class MaterialCircularProgress: UIView {
         drawPathAnimation.toValue = 1.0
         drawPathAnimation.fillMode = kCAFillModeForwards
         drawPathAnimation.removedOnCompletion = false
-        drawPathAnimation.duration = 0.3
+        drawPathAnimation.duration = AfterpartDuration
         checkmarkShapeLayer.addAnimation(drawPathAnimation, forKey: "strokeEnd")
     }
     
