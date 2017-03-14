@@ -1,7 +1,7 @@
 //: Playground - noun: a place where people can play
 
 import UIKit
-import XCPlayground
+import PlaygroundSupport
 
 extension UIColor {
     
@@ -31,13 +31,13 @@ final class MaterialCircularProgress: UIView {
             let checkmarkPath = UIBezierPath()
             let startPoint    = CGPoint(x: center.x - CheckmarkSize.width * 0.48,
                 y: center.y + CheckmarkSize.height * 0.05)
-            checkmarkPath.moveToPoint(startPoint)
+            checkmarkPath.move(to: startPoint)
             let firstLineEndPoint = CGPoint(x: startPoint.x + CheckmarkSize.width * 0.36,
                 y: startPoint.y + CheckmarkSize.height * 0.36)
-            checkmarkPath.addLineToPoint(firstLineEndPoint)
+            checkmarkPath.addLine(to: firstLineEndPoint)
             let secondLineEndPoint = CGPoint(x: firstLineEndPoint.x + CheckmarkSize.width * 0.64,
                 y: firstLineEndPoint.y - CheckmarkSize.height)
-            checkmarkPath.addLineToPoint(secondLineEndPoint)
+            checkmarkPath.addLine(to: secondLineEndPoint)
             return checkmarkPath
         }
     }
@@ -46,7 +46,7 @@ final class MaterialCircularProgress: UIView {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        backgroundColor = UIColor.clearColor()
+        backgroundColor = .clear
         initShapeLayer()
     }
     
@@ -61,9 +61,9 @@ final class MaterialCircularProgress: UIView {
                                     "strokeStart" : NSNull(),
                                     "transform" : NSNull(),
                                     "strokeColor" : NSNull()]
-        circleOutlineLayer.backgroundColor = UIColor.clearColor().CGColor
-        circleOutlineLayer.strokeColor     = UIColor.blueColor().CGColor
-        circleOutlineLayer.fillColor       = UIColor.clearColor().CGColor
+        circleOutlineLayer.backgroundColor = UIColor.clear.cgColor
+        circleOutlineLayer.strokeColor     = UIColor.blue.cgColor
+        circleOutlineLayer.fillColor       = UIColor.clear.cgColor
         circleOutlineLayer.lineWidth       = outLineWidth
         circleOutlineLayer.strokeStart     = 0
         circleOutlineLayer.strokeEnd       = MinStrokeLength
@@ -74,30 +74,30 @@ final class MaterialCircularProgress: UIView {
                                                         radius: center.x,
                                                         startAngle: 0,
                                                         endAngle: CGFloat(M_PI*2),
-                                                        clockwise: true).CGPath
+                                                        clockwise: true).cgPath
         circleOutlineLayer.transform       = CATransform3DMakeRotation(CGFloat(M_PI*1.5), 0, 0, 1.0)
         layer.addSublayer(circleOutlineLayer)
         // Inside
         let insideCircleRect = CGRect(origin: CGPoint(x: outLineWidth * 0.5, y: outLineWidth * 0.5),
                                       size: CGSize(width: circleOutlineLayer.bounds.width - outLineWidth,
                                         height: circleOutlineLayer.bounds.height - outLineWidth))
-        let insideCirclePath = UIBezierPath(ovalInRect: insideCircleRect).CGPath
+        let insideCirclePath = UIBezierPath(ovalIn: insideCircleRect).cgPath
         insideCircleShapeLayer.path = insideCirclePath
-        insideCircleShapeLayer.fillColor = UIColor(hex: 0xf19b00, alpha: 1.0).CGColor
+        insideCircleShapeLayer.fillColor = UIColor(hex: 0xf19b00, alpha: 1.0).cgColor
         insideCircleShapeLayer.opacity   = 0
         layer.addSublayer(insideCircleShapeLayer)
         // Checkmark
-        checkmarkShapeLayer.strokeColor = UIColor.whiteColor().CGColor
+        checkmarkShapeLayer.strokeColor = UIColor.white.cgColor
         checkmarkShapeLayer.lineWidth   = 3.0
-        checkmarkShapeLayer.fillColor   = UIColor.clearColor().CGColor
-        checkmarkShapeLayer.path        = CheckmarkPath.CGPath
+        checkmarkShapeLayer.fillColor   = UIColor.clear.cgColor
+        checkmarkShapeLayer.path        = CheckmarkPath.cgPath
         checkmarkShapeLayer.strokeEnd   = 0
         layer.addSublayer(checkmarkShapeLayer)
     }
     
     func startAnimating(duration: Double) {
         self.duration = duration
-        if layer.animationForKey("rotation") == nil {
+        if layer.animation(forKey: "rotation") == nil {
             startColorAnimation()
             startStrokeAnimation()
             startRotatingAnimation()
@@ -107,22 +107,22 @@ final class MaterialCircularProgress: UIView {
     private func startColorAnimation() {
         let color      = CAKeyframeAnimation(keyPath: "strokeColor")
         color.duration = 10.0
-        color.values   = [UIColor(hex: 0xf19b00, alpha: 1.0).CGColor]
+        color.values   = [UIColor(hex: 0xf19b00, alpha: 1.0).cgColor]
         color.calculationMode = kCAAnimationPaced
         color.repeatCount     = Float.infinity
-        circleOutlineLayer.addAnimation(color, forKey: "color")
+        circleOutlineLayer.add(color, forKey: "color")
     }
     
     private func startRotatingAnimation() {
         let rotation            = CABasicAnimation(keyPath: "transform.rotation.z")
         rotation.toValue        = M_PI*6.0
         rotation.duration       = (duration - AfterpartDuration) * 0.77
-        rotation.cumulative     = true
-        rotation.additive       = true
-        rotation.removedOnCompletion = false
+        rotation.isCumulative   = true
+        rotation.isAdditive     = true
+        rotation.isRemovedOnCompletion = false
         rotation.fillMode       = kCAFillModeForwards
         rotation.timingFunction = CAMediaTimingFunction(controlPoints: 0.39, 0.575, 0.565, 1.0)
-        circleOutlineLayer.addAnimation(rotation, forKey: "rotation")
+        circleOutlineLayer.add(rotation, forKey: "rotation")
     }
     
     private func startStrokeAnimation() {
@@ -136,17 +136,17 @@ final class MaterialCircularProgress: UIView {
         strokeEnd.duration              = duration - AfterpartDuration
         strokeEnd.fillMode              = kCAFillModeForwards
         strokeEnd.timingFunction        = easeInOutSineTimingFunc
-        strokeEnd.removedOnCompletion   = false
-        let pathAnim                 = CAAnimationGroup()
-        pathAnim.animations          = [strokeEnd]
-        pathAnim.duration            = duration - AfterpartDuration
-        pathAnim.fillMode            = kCAFillModeForwards
-        pathAnim.removedOnCompletion = false
+        strokeEnd.isRemovedOnCompletion = false
+        let pathAnim                   = CAAnimationGroup()
+        pathAnim.animations            = [strokeEnd]
+        pathAnim.duration              = duration - AfterpartDuration
+        pathAnim.fillMode              = kCAFillModeForwards
+        pathAnim.isRemovedOnCompletion = false
         CATransaction.begin()
         CATransaction.setCompletionBlock {
             self.startCompletionAnimation()
         }
-        circleOutlineLayer.addAnimation(pathAnim, forKey: "stroke")
+        circleOutlineLayer.add(pathAnim, forKey: "stroke")
         CATransaction.commit()
     }
     
@@ -161,9 +161,9 @@ final class MaterialCircularProgress: UIView {
         fadeOutAnimation.toValue  = 0
         fadeOutAnimation.duration = AfterpartDuration
         fadeOutAnimation.fillMode = kCAFillModeForwards
-        fadeOutAnimation.removedOnCompletion = false
+        fadeOutAnimation.isRemovedOnCompletion = false
         fadeOutAnimation.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseIn)
-        circleOutlineLayer.addAnimation(fadeOutAnimation, forKey: "fadeOut")
+        circleOutlineLayer.add(fadeOutAnimation, forKey: "fadeOut")
     }
     
     private func startFillCircleAnimation() {
@@ -171,18 +171,18 @@ final class MaterialCircularProgress: UIView {
         fadeInAnimation.toValue  = 1.0
         fadeInAnimation.duration = AfterpartDuration
         fadeInAnimation.fillMode = kCAFillModeForwards
-        fadeInAnimation.removedOnCompletion = false
+        fadeInAnimation.isRemovedOnCompletion = false
         fadeInAnimation.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseIn)
-        insideCircleShapeLayer.addAnimation(fadeInAnimation, forKey: "fadeOut")
+        insideCircleShapeLayer.add(fadeInAnimation, forKey: "fadeOut")
     }
     
     private func startDrawingCheckmarkAnimation() {
         let drawPathAnimation = CABasicAnimation(keyPath: "strokeEnd")
         drawPathAnimation.toValue = 1.0
         drawPathAnimation.fillMode = kCAFillModeForwards
-        drawPathAnimation.removedOnCompletion = false
+        drawPathAnimation.isRemovedOnCompletion = false
         drawPathAnimation.duration = AfterpartDuration
-        checkmarkShapeLayer.addAnimation(drawPathAnimation, forKey: "strokeEnd")
+        checkmarkShapeLayer.add(drawPathAnimation, forKey: "strokeEnd")
     }
     
     func stopAnimating() {
@@ -202,5 +202,5 @@ let progress = MaterialCircularProgress(frame: CGRect(origin: CGPoint.zero,
     size: CGSize(width: 80, height: 80)))
 progress.center = CGPoint(x: view.bounds.width * 0.5, y: view.bounds.height * 0.5)
 view.addSubview(progress)
-XCPlaygroundPage.currentPage.liveView = view
-progress.startAnimating(3.0)
+PlaygroundPage.current.liveView = view
+progress.startAnimating(duration: 3.0)
