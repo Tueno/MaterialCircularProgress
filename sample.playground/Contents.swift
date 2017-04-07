@@ -29,8 +29,8 @@ final class MaterialCircularProgress: UIView {
         get {
             let CheckmarkSize  = CGSize(width: 20, height: 16)
             let checkmarkPath = UIBezierPath()
-            let startPoint    = CGPoint(x: center.x - CheckmarkSize.width * 0.48,
-                y: center.y + CheckmarkSize.height * 0.05)
+            let startPoint    = CGPoint(x: bounds.width * 0.5 - CheckmarkSize.width * 0.48,
+                y: bounds.height * 0.5 + CheckmarkSize.height * 0.05)
             checkmarkPath.move(to: startPoint)
             let firstLineEndPoint = CGPoint(x: startPoint.x + CheckmarkSize.width * 0.36,
                 y: startPoint.y + CheckmarkSize.height * 0.36)
